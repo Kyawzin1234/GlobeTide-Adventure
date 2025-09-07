@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlobeTide Adventure - Experiences</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --ocean-1: #00bbff;
+      --ocean-2: #118ab2;
+      --ocean-3: #06b6d4;
+      --sand: #fffbf0;
+      --accent: #ffd166;
+      --glass: rgba(255,255,255,0.08);
+      --glass-strong: rgba(255,255,255,0.12);
+      --card-radius: 16px;
+      --max-width: 1200px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, rgba(6,66,100,0.95) 0%, rgba(4,42,73,0.95) 60%), radial-gradient(ellipse at 10% 10%, rgba(255,255,255,0.02), transparent 10%);
+      color: #eef6f9;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .ocean-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(2,48,71,0.75), rgba(2,28,42,0.9) 70%);
+    }
+    .bubbles {
+      position: absolute;
+      left: -10%;
+      top: 10%;
+      width: 120%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.22;
+      mix-blend-mode: screen;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,0.08) 0 2px, transparent 3px),
+        radial-gradient(circle at 80% 40%, rgba(255,255,255,0.06) 0 3px, transparent 5px),
+        radial-gradient(circle at 40% 80%, rgba(255,255,255,0.04) 0 2px, transparent 4px);
+      animation: drift 12s linear infinite;
+    }
+    @keyframes drift { 0% { transform: translateX(0) } 50% { transform: translateX(-6%) } 100% { transform: translateX(0) } }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(180deg, rgba(6,66,100,0.26), rgba(6,66,100,0.18));
+      z-index: 1020;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+.brand {
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: var(--sand);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand .logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--ocean-2), var(--ocean-3));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(3,40,60,0.35), inset 0 -6px 14px rgba(255,255,255,0.03);
+    }
+    .brand .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .navbar-nav .nav-link {
+      color: var(--sand) !important;
+      transition: color 0.3s;
+    }
+    .navbar-nav .nav-link:hover {
+      color: var(--accent) !important;
+    }
+    .navbar-nav .nav-link.active {
+      color: var(--accent) !important;
+      position: relative;
+    }
+    .navbar-nav .nav-link.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -16px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), rgba(255,209,102,0.6));
+      border-radius: 4px;
+      transform: translateY(-6px);
+      opacity: 0.95;
+    }
+    .navbar-toggler {
+      border: none;
+      color: var(--sand);
+    }
+    .navbar-collapse {
+      background: linear-gradient(180deg, rgba(6,66,100,0.26), rgba(6,66,100,0.18));
+      backdrop-filter: blur(6px);
+    }
+    @media (max-width: 991.98px) {
+      .navbar-collapse {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.03);
+      }
+      .navbar-nav {
+        gap: 10px;
+      }
+      .navbar-nav .nav-item {
+        text-align: left;
+      }
+    }
+
+    .hero {
+      padding: 48px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-card {
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 28px;
+      align-items: center;
+    }
+    .hero-left {
+      padding: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 10px 30px rgba(3,20,30,0.35);
+    }
+    .hero h1 {
+      font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+      margin: 0 0 10px 0;
+      color: #f7fbfc;
+    }
+    .hero p.lead {
+      opacity: 0.92;
+      margin-bottom: 18px;
+      color: #e6f7fb;
+    }
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-pill {
+      background: rgba(255,255,255,0.03);
+      border-radius: 14px;
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .search-pill input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #eaf8ff;
+      width: 100%;
+    }
+
+    .breadcrumbs {
+      margin: 14px 0;
+      padding: 10px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 12px;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 22px;
+      margin-top: 24px;
+    }
+    .flip-card {
+      perspective: 1200px;
+      border-radius: var(--card-radius);
+      cursor: pointer;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 320px;
+      transform-style: preserve-3d;
+      transition: transform 700ms cubic-bezier(.2,.9,.3,1);
+      border-radius: var(--card-radius);
+      box-shadow: 0 8px 30px rgba(2,20,30,0.45);
+    }
+    .flip-card:hover .flip-card-inner,
+    .flip-card.flip .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .flip-card-front {
+      background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.12));
+      color: #fff;
+    }
+    .destination-thumb {
+      flex: 1 1 60%;
+      background-size: cover;
+      background-position: center;
+    }
+    .destination-info {
+      padding: 12px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    }
+    .flip-card-back {
+      transform: rotateY(180deg);
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(2,48,71,0.9), rgba(3,30,48,0.95));
+      color: #f1fbff;
+      gap: 8px;
+    }
+    .badge-ocean {
+      background: rgba(255,255,255,0.06);
+      color: #eaf8ff;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    @media (max-width: 992px) {
+      .hero-card { grid-template-columns: 1fr; padding: 18px; }
+      .hero-left { order: 2; }
+      .hero-right { order: 1; }
+      .flip-card-inner { height: 280px; }
+      .grid { gap: 18px; }
+    }
+
+    footer {
+      margin-top: 36px;
+      border-top: 1px solid rgba(255,255,255,0.03);
+      padding: 28px 0;
+      background: transparent;
+    }
+
+    .wave-strip {
+      margin-top: 20px;
+      height: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .wave-strip svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      transform: translateY(22%);
+      opacity: 0.9;
+    }
+
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 12px;
+    }
+
+    .contact-cta {
+      background: linear-gradient(90deg, var(--accent), #ffa94d);
+      color: #063241;
+      border: none;
+    }
+
+    .floaty {
+      animation: floaty 5.6s ease-in-out infinite;
+    }
+    @keyframes floaty {
+      0% { transform: translateY(0) }
+      50% { transform: translateY(-8px) rotate(-0.3deg) }
+      100% { transform: translateY(0) }
+    }
+
+    .hero-right {
+      position: relative;
+    }
+    .hero-right::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="ocean-bg">
+    <div class="bubbles"></div>
+  </div>
+
+<!-- Header -->
+  <header class="site-header py-3">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <div class="brand">
+          <div class="logo">
+            <a href="index.html"><img src="img/Blue & Orange Simple Tour & Travel Logo.svg" alt="GlobeTide Logo"></a>
+          </div>
+          <div>
+            <div style="font-size:14px;opacity:0.9">GlobeTide</div>
+            <div style="font-size:12px;margin-top:-4px;color:rgba(255,255,255,0.7)">Adventure</div>
+          </div>
+        </div>
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav ms-auto align-items-lg-center">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="destinations.html">Destinations</a></li>
+            <li class="nav-item"><a class="nav-link" href="planandbook.html">Plan & Book</a></li>
+            <li class="nav-item"><a class="nav-link active" href="Experiences.html">Experiences</a></li>
+            <li class="nav-item"><a class="nav-link" href="Stories.html">Stories</a></li>
+            <li class="nav-item ms-2 d-none d-lg-block"><button class="btn contact-cta btn-sm px-3" onclick="startBooking()">Start Booking</button></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-card">
+        <div class="hero-left">
+          <div class="breadcrumbs">
+            <span>Home</span> / <span>Experiences</span>
+          </div>
+          <h1>Unforgettable Ocean Adventures</h1>
+          <p class="lead">Dive into curated experiences, from snorkeling to cultural tours, designed for thrill-seekers.</p>
+          <div class="cta-row">
+            <button class="btn contact-cta" onclick="exploreExperiences()">Explore Now</button>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="floaty" style="width: 100%; height: 300px; background: url('https://images.unsplash.com/photo-1635938812025-e773c4c7cadf?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') center/cover;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats glass p-4 mb-4 d-flex justify-content-around text-center">
+      <div>
+        <p class="fs-4 mb-0">4.8 / 5</p>
+        <p>Avg. Rating</p>
+      </div>
+      <div>
+        <p class="fs-4 mb-0">1,234+</p>
+        <p>Trips This Month</p>
+      </div>
+      <div>
+        <p class="fs-4 mb-0">Free Cancellation</p>
+        <p>On selected bookings</p>
+      </div>
+    </section>
+
+    <!-- Featured Experiences -->
+    <section class="experiences">
+      <h3 class="text-center mb-4">Featured Experiences</h3>
+      <div class="grid">
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="destination-thumb" style="background-image: url('https://images.unsplash.com/photo-1708649290066-5f617003b93f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"></div>
+              <div class="destination-info">
+                <h4>Snorkeling Adventure</h4>
+                <p>Coral reefs & marine life</p>
+                <p class="rating">4.9 ★ <span>from $99</span></p>
+              </div>
+            </div>
+            <div class="flip-card-back d-flex flex-column">
+              <p class="badge-ocean">Guided tour</p>
+              <p>Explore vibrant coral reefs with expert guides. Gear included.</p>
+              <button class="btn contact-cta mt-auto" onclick="showDetails('Snorkeling')">Details</button>
+              <button class="btn contact-cta" onclick="bookExperience('Snorkeling')">Book</button>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="destination-thumb" style="background-image: url('https://images.unsplash.com/photo-1692735678510-03d976e6565e?q=80&w=1224&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"></div>
+              <div class="destination-info">
+                <h4>Sailing Cruise</h4>
+                <p>Sunset sails & open water</p>
+                <p class="rating">4.8 ★ <span>from $149</span></p>
+              </div>
+            </div>
+            <div class="flip-card-back d-flex flex-column">
+              <p class="badge-ocean">Private charter</p>
+              <p>Sail into the sunset with a private crew and onboard dining.</p>
+              <button class="btn contact-cta mt-auto" onclick="showDetails('Sailing Cruise')">Details</button>
+              <button class="btn contact-cta" onclick="bookExperience('Sailing Cruise')">Book</button>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="destination-thumb" style="background-image: url('https://plus.unsplash.com/premium_photo-1663119029722-0da758fa1181?q=80&w=1193&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"></div>
+              <div class="destination-info">
+                <h4>Coastal Cultural Tour</h4>
+                <p>Local traditions & cuisine</p>
+                <p class="rating">4.7 ★ <span>from $89</span></p>
+              </div>
+            </div>
+            <div class="flip-card-back d-flex flex-column">
+              <p class="badge-ocean">Local guides</p>
+              <p>Discover coastal villages, markets, and authentic cuisine.</p>
+              <button class="btn contact-cta mt-auto" onclick="showDetails('Cultural Tour')">Details</button>
+              <button class="btn contact-cta" onclick="bookExperience('Cultural Tour')">Book</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Package -->
+    <section class="package text-center my-5">
+      <div class="glass p-4">
+        <h3>Ocean Breeze Package</h3>
+        <p>Weekend escape with sailing, snorkeling, and sky-blue views.</p>
+        <button class="btn contact-cta" onclick="showDetails('Ocean Breeze Package')">Learn more</button>
+        <button class="btn contact-cta" onclick="reservePackage()">Reserve</button>
+      </div>
+    </section>
+
+    <!-- Adventure Highlights -->
+    <section class="adventure-highlights">
+      <h3 class="text-center mb-4">Adventure Highlights</h3>
+      <p class="text-center">More ways to explore the ocean</p>
+      <div class="grid">
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="destination-thumb" style="background-image: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"></div>
+              <div class="destination-info">
+                <h4>Scuba Diving</h4>
+                <p>Deep-sea exploration</p>
+                <p class="rating">4.9 ★ <span>from $199</span></p>
+              </div>
+            </div>
+            <div class="flip-card-back d-flex flex-column">
+              <p class="badge-ocean">Certified guides</p>
+              <p>Dive into underwater worlds with expert-led scuba adventures.</p>
+              <button class="btn contact-cta mt-auto" onclick="showDetails('Scuba Diving')">Details</button>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="destination-thumb" style="background-image: url('https://plus.unsplash.com/premium_photo-1733317328038-4aa0269ac803?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"></div>
+              <div class="destination-info">
+                <h4>Yacht Charter</h4>
+                <p>Luxury on the waves</p>
+                <p class="rating">4.8 ★ <span>from $499</span></p>
+              </div>
+            </div>
+            <div class="flip-card-back d-flex flex-column">
+              <p class="badge-ocean">Private yacht</p>
+              <p>Experience luxury with a private yacht charter for your group.</p>
+              <button class="btn contact-cta mt-auto" onclick="showDetails('Yacht Charter')">Details</button>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="destination-thumb" style="background-image: url('https://images.unsplash.com/photo-1746210836867-9eee49880213?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGNvYXN0YWwlMjBoaWtpbmd8ZW58MHx8MHx8fDA%3D');"></div>
+              <div class="destination-info">
+                <h4>Coastal Hike</h4>
+                <p>Scenic trails</p>
+                <p class="rating">4.7 ★ <span>from $79</span></p>
+              </div>
+            </div>
+            <div class="flip-card-back d-flex flex-column">
+              <p class="badge-ocean">Guided hike</p>
+              <p>Walk stunning coastal trails with breathtaking ocean views.</p>
+              <button class="btn contact-cta mt-auto" onclick="showDetails('Coastal Hike')">Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="text-center">
+        <h3>GlobeTide Adventure</h3>
+        <p>Ocean-first travel experiences curated for explorers who want blue horizons, salty air, and effortless planning.</p>
+      </div>
+      <div class="footer-content d-flex justify-content-center gap-5">
+        <div>
+          <h4>Company</h4>
+          <a href="about.html">About</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p>hello@globetide.example</p>
+        </div>
+      </div>
+      <div class="wave-strip">
+        <svg viewBox="0 0 1200 40" preserveAspectRatio="none">
+          <path d="M0,40 C300,10 900,70 1200,40 L1200,40 L0,40 Z" fill="rgba(255,255,255,0.08)"></path>
+        </svg>
+      </div>
+      <p class="copyright text-center">© GlobeTide Adventure — crafted with sea breeze.</p>
+    </div>
+  </footer>
+
+  <!-- Block JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function startBooking() {
+      alert('Booking feature coming soon!');
+    }
+    function exploreExperiences() {
+      alert('Explore experiences now!');
+    }
+    function showDetails(item) {
+      alert(`More details about ${item} coming soon!`);
+    }
+    function bookExperience(experience) {
+      alert(`Booking ${experience}...`);
+    }
+    function reservePackage() {
+      alert('Reserving Ocean Breeze Package...');
+    }
+    document.querySelectorAll('.flip-card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('flip');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GlobeTide Adventure — Ocean Travel Experiences</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --ocean-1: #00bbff;
+      --ocean-2: #118ab2;
+      --ocean-3: #06b6d4;
+      --sand: #fffbf0;
+      --accent: #ffd166;
+      --glass: rgba(255,255,255,0.08);
+      --glass-strong: rgba(255,255,255,0.12);
+      --card-radius: 16px;
+      --max-width: 1200px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, rgba(6,66,100,0.95) 0%, rgba(4,42,73,0.95) 60%), radial-gradient(ellipse at 10% 10%, rgba(255,255,255,0.02), transparent 10%);
+      color: #eef6f9;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .ocean-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(2,48,71,0.75), rgba(2,28,42,0.9) 70%);
+    }
+    .bubbles {
+      position: absolute;
+      left: -10%;
+      top: 10%;
+      width: 120%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.22;
+      mix-blend-mode: screen;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,0.08) 0 2px, transparent 3px),
+        radial-gradient(circle at 80% 40%, rgba(255,255,255,0.06) 0 3px, transparent 5px),
+        radial-gradient(circle at 40% 80%, rgba(255,255,255,0.04) 0 2px, transparent 4px);
+      animation: drift 12s linear infinite;
+    }
+    @keyframes drift { 0% { transform: translateX(0) } 50% { transform: translateX(-6%) } 100% { transform: translateX(0) } }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(180deg, rgba(6,66,100,0.26), rgba(6,66,100,0.18));
+      z-index: 1020;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: var(--sand);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand .logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--ocean-2), var(--ocean-3));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(3,40,60,0.35), inset 0 -6px 14px rgba(255,255,255,0.03);
+    }
+    .brand .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .navbar-nav .nav-link {
+      color: var(--sand) !important;
+      transition: color 0.3s;
+    }
+    .navbar-nav .nav-link:hover {
+      color: var(--accent) !important;
+    }
+    .navbar-nav .nav-link.active {
+      color: var(--accent) !important;
+      position: relative;
+    }
+    .navbar-nav .nav-link.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -16px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), rgba(255,209,102,0.6));
+      border-radius: 4px;
+      transform: translateY(-6px);
+      opacity: 0.95;
+    }
+    .navbar-toggler {
+      border: none;
+      color: var(--sand);
+    }
+    .navbar-collapse {
+      background: linear-gradient(180deg, rgba(6,66,100,0.26), rgba(6,66,100,0.18));
+      backdrop-filter: blur(6px);
+    }
+    @media (max-width: 991.98px) {
+      .navbar-collapse {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.03);
+      }
+      .navbar-nav {
+        gap: 10px;
+      }
+      .navbar-nav .nav-item {
+        text-align: left;
+      }
+      .brand .logo {
+        width: 48px;
+        height: 48px;
+      }
+    }
+
+    .hero {
+      padding: 48px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-card {
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 28px;
+      align-items: center;
+    }
+    .hero-left {
+      padding: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 10px 30px rgba(3,20,30,0.35);
+    }
+    .hero h1 {
+      font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+      margin: 0 0 10px 0;
+      color: #f7fbfc;
+    }
+    .hero p.lead {
+      opacity: 0.92;
+      margin-bottom: 18px;
+      color: #e6f7fb;
+    }
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 22px;
+      margin: 24px;
+    }
+    .flip-card {
+      perspective: 1200px;
+      border-radius: var(--card-radius);
+      cursor: pointer;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 320px;
+      transform-style: preserve-3d;
+      transition: transform 700ms cubic-bezier(.2,.9,.3,1);
+      border-radius: var(--card-radius);
+      box-shadow: 0 8px 30px rgba(2,20,30,0.45);
+    }
+    .flip-card:hover .flip-card-inner,
+    .flip-card.flip .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .flip-card-front {
+      background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.12));
+      color: #fff;
+    }
+    .destination-thumb {
+      flex: 1 1 60%;
+      background-size: cover;
+      background-position: center;
+    }
+    .destination-info {
+      padding: 12px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    }
+    .flip-card-back {
+      transform: rotateY(180deg);
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(2,48,71,0.9), rgba(3,30,48,0.95));
+      color: #f1fbff;
+      gap: 8px;
+    }
+    .badge-ocean {
+      background: rgba(255,255,255,0.06);
+      color: #eaf8ff;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    @media (max-width: 992px) {
+      .hero-card { grid-template-columns: 1fr; padding: 18px; }
+      .hero-left { order: 2; }
+      .hero-right { order: 1; }
+      .flip-card-inner { height: 280px; }
+      .grid { gap: 18px; }
+    }
+
+    footer {
+      margin-top: 36px;
+      border-top: 1px solid rgba(255,255,255,0.03);
+      padding: 28px 0;
+      background: transparent;
+    }
+
+    .wave-strip {
+      margin-top: 20px;
+      height: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .wave-strip svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      transform: translateY(22%);
+      opacity: 0.9;
+    }
+
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 12px;
+    }
+
+    .contact-cta {
+      background: linear-gradient(90deg, var(--accent), #ffa94d);
+      color: #063241;
+      border: none;
+    }
+
+    .floaty {
+      animation: floaty 5.6s ease-in-out infinite;
+    }
+    @keyframes floaty {
+      0% { transform: translateY(0) }
+      50% { transform: translateY(-8px) rotate(-0.3deg) }
+      100% { transform: translateY(0) }
+    }
+
+    .hero-right {
+      position: relative;
+    }
+    .hero-right::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(6,66,100,0.14), rgba(2,48,71,0.24));
+      border-radius: 18px;
+      z-index: 1;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="ocean-bg">
+    <div class="bubbles"></div>
+  </div>
+
+<!-- Header -->
+  <header class="site-header py-3">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <div class="brand">
+          <div class="logo">
+            <a href="index.html"><img src="img/Blue & Orange Simple Tour & Travel Logo.svg" alt="GlobeTide Logo"></a>
+          </div>
+          <div>
+            <div style="font-size:14px;opacity:0.9">GlobeTide</div>
+            <div style="font-size:12px;margin-top:-4px;color:rgba(255,255,255,0.7)">Adventure</div>
+          </div>
+        </div>
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav ms-auto align-items-lg-center">
+            <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="destinations.html">Destinations</a></li>
+            <li class="nav-item"><a class="nav-link" href="planandbook.html">Plan & Book</a></li>
+            <li class="nav-item"><a class="nav-link" href="Experiences.html">Experiences</a></li>
+            <li class="nav-item"><a class="nav-link" href="Stories.html">Stories</a></li>
+            <li class="nav-item ms-2 d-none d-lg-block"><button class="btn contact-cta btn-sm px-3" onclick="startBooking()">Start Booking</button></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <main class="container-lg hero">
+    <div class="hero-card glass">
+      <div class="hero-left">
+        <div class="breadcrumbs">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="opacity:0.95"><path d="M3 11h4l2-2 4 4 6-6" stroke="rgba(255,255,255,0.7)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <small style="opacity:0.9">Home / Featured</small>
+        </div>
+
+        <h1>GlobeTide Adventure — Dive into ocean escapes</h1>
+        <p class="lead">Explore curated ocean-side destinations, book unique experiences, and plan adventures that breathe sea salt and sunlight.</p>
+
+
+        <div class="cta-row">
+          <a href="destinations.html"><button class="btn btn-lg btn-outline-light me-2">Explore Destinations</button></a>
+          <a href="planandbook.html"><button class="btn btn-lg btn-light contact-cta">Plan My Trip</button></a>
+        </div>
+
+        <div class="mt-3" style="display:flex; gap:10px;">
+          <div class="glass p-2" style="flex:1">
+            <small class="d-block" style="opacity:0.8">Avg. Rating</small>
+            <strong>4.8 / 5</strong>
+          </div>
+          <div class="glass p-2" style="flex:1">
+            <small class="d-block" style="opacity:0.8">Trips This Month</small>
+            <strong>1,234+</strong>
+          </div>
+          <div class="glass p-2" style="flex:1">
+            <small class="d-block" style="opacity:0.8">Free Cancellation</small>
+            <strong>On selected bookings</strong>
+          </div>
+        </div>
+
+        <!-- featured -->
+        <div class="mt-4">
+          <h5 style="margin-bottom:12px">Featured Destinations</h5>
+          <div class="grid">
+            <!-- card 1 -->
+            <div class="flip-card" tabindex="0" role="button" aria-pressed="false">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <div class="destination-thumb" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=70');"></div>
+                  <div class="destination-info d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 style="margin:0">Maldives — Atoll Escape</h6>
+                      <small style="opacity:0.85">Private villas & crystal water</small>
+                    </div>
+                    <div style="text-align:right">
+                      <div class="badge-ocean">4.9 ★</div>
+                      <small class="d-block" style="opacity:0.75">from $299</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flip-card-back">
+                  <div style="display:flex; gap:12px; align-items:center;">
+                    <div style="width:64px; height:64px; border-radius:12px; background-image:url('https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=600&q=60'); background-size:cover;"></div>
+                    <div>
+                      <h6 style="margin:0">Seaplane pick-up</h6>
+                      <small style="opacity:0.85">3 nights · Private pool</small>
+                    </div>
+                  </div>
+                  <p style="margin-top:10px; flex:1; font-size:14px; opacity:0.95">Wake up to turquoise water and step directly into the lagoon. Perfect for snorkeling and honeymooners.</p>
+                  <div style="display:flex; gap:8px;">
+                    <button class="btn btn-sm btn-outline-light">Details</button>
+                    <button class="btn btn-sm contact-cta">Book</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- card 2 -->
+            <div class="flip-card" tabindex="0" role="button" aria-pressed="false">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <div class="destination-thumb" style="background-image: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1400&q=70');"></div>
+                  <div class="destination-info d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 style="margin:0">Bali — Surf & Rice</h6>
+                      <small style="opacity:0.85">Surf lessons & cultural tours</small>
+                    </div>
+                    <div style="text-align:right">
+                      <div class="badge-ocean">4.7 ★</div>
+                      <small class="d-block" style="opacity:0.75">from $139</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flip-card-back">
+                  <h6 style="margin:0">Local guides & lessons</h6>
+                  <p style="margin-top:8px;flex:1;font-size:14px;opacity:0.95">Beach mornings, rice terrace hikes, sunset dinners with ocean breeze.</p>
+                  <div style="display:flex; gap:8px; margin-top:auto;">
+                    <button class="btn btn-sm btn-outline-light">Details</button>
+                    <button class="btn btn-sm contact-cta">Book</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- card 3 -->
+            <div class="flip-card" tabindex="0" role="button" aria-pressed="false">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <div class="destination-thumb" style="background-image: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=70');"></div>
+                  <div class="destination-info d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 style="margin:0">Santorini — Cliffside</h6>
+                      <small style="opacity:0.85">Sunsets & seafood</small>
+                    </div>
+                    <div style="text-align:right">
+                      <div class="badge-ocean">4.8 ★</div>
+                      <small class="d-block" style="opacity:0.75">from $179</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flip-card-back">
+                  <h6 style="margin:0">Iconic sunsets</h6>
+                  <p style="margin-top:8px;flex:1;font-size:14px;opacity:0.95">Whitewashed buildings, sea views, and tavernas with fresh catch of the day.</p>
+                  <div style="display:flex; gap:8px; margin-top:auto;">
+                    <button class="btn btn-sm btn-outline-light">Details</button>
+                    <button class="btn btn-sm contact-cta">Book</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- hero right: decorative card -->
+      <div class="hero-right text-center hero-right floaty" style="padding:22px;">
+        <div class="glass p-3" style="border-radius: 18px;">
+          <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=70" alt="ocean" style="width:100%; height:220px; object-fit:cover; border-radius:12px;" />
+          <div style="text-align:left; margin-top:12px;">
+            <h6 style="margin:0">Ocean Breeze Package</h6>
+            <p style="font-size:14px;opacity:0.9;margin-top:6px">Weekend escape with sailing, snorkeling and sky-blue views.</p>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+              <button class="btn btn-sm btn-outline-light">Learn more</button>
+              <button class="btn btn-sm contact-cta">Reserve</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="wave-strip d-none d-md-block">
+          <!-- small decorative svg wave -->
+          <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,40 C150,120 350,0 600,40 C850,80 1050,20 1200,40 L1200 0 L0 0 Z" fill="rgba(255,255,255,0.02)"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- EXTRA SECTION: Explore more -->
+    <section class="experiences">
+      <h3 class="text-center mb-4">Popular Experience Types</h3>
+      <p class="text-center">Choose your vibe</p>
+      <div class="grid">
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="destination-thumb" style="background-image: url('img/Beach.jpg');"></div>
+              <div class="destination-info">
+                <h4>Beach Days</h4>
+                <p>Relax & tan</p>
+              </div>
+            </div>
+            <div class="flip-card-back d-flex flex-column">
+              <p>Laze on pristine shores with soft sand and gentle waves.</p>
+              <button class="btn contact-cta mt-auto" onclick="showDetails('Beach Days')">Learn more</button>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="destination-thumb" style="background-image: url('img/sailing.jpg');"></div>
+              <div class="destination-info">
+                <h4>Sailing</h4>
+                <p>Day cruises</p>
+              </div>
+            </div>
+            <div class="flip-card-back d-flex flex-column">
+              <p>Explore the open water with guided sailing adventures.</p>
+              <button class="btn contact-cta mt-auto" onclick="showDetails('Sailing')">Learn more</button>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="destination-thumb" style="background-image: url('img/surf.jpg');"></div>
+              <div class="destination-info">
+                <h4>Water Sports</h4>
+                <p>Surf & dive</p>
+              </div>
+            </div>
+            <div class="flip-card-back d-flex flex-column">
+              <p>Thrilling surfing and diving experiences for adventure seekers.</p>
+              <button class="btn contact-cta mt-auto" onclick="showDetails('Water Sports')">Learn more</button>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="destination-thumb" style="background-image: url('img/girl_beach.jpg');"></div>
+              <div class="destination-info">
+                <h4>Photo Tours</h4>
+                <p>Scenic shoots</p>
+              </div>
+            </div>
+            <div class="flip-card-back d-flex flex-column">
+              <p>Capture stunning ocean views with guided photography tours.</p>
+              <button class="btn contact-cta mt-auto" onclick="showDetails('Photo Tours')">Learn more</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+<footer>
+    <div class="container">
+      <div class="text-center">
+        <h3>GlobeTide Adventure</h3>
+        <p>Ocean-first travel experiences curated for explorers who want blue horizons, salty air, and effortless planning.</p>
+      </div>
+      <div class="footer-content d-flex justify-content-center gap-5">
+        <div>
+          <h4>Company</h4>
+          <a href="about.html">About</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p>hello@globetide.example</p>
+        </div>
+      </div>
+      <div class="wave-strip">
+        <svg viewBox="0 0 1200 40" preserveAspectRatio="none">
+          <path d="M0,40 C300,10 900,70 1200,40 L1200,40 L0,40 Z" fill="rgba(255,255,255,0.08)"></path>
+        </svg>
+      </div>
+      <p class="copyright text-center">© GlobeTide Adventure — crafted with sea breeze.</p>
+    </div>
+  </footer>
+
+  <!-- BOOTSTRAP JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // small helpers
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // card flip interaction: allow click/tap to flip for touch devices
+    document.querySelectorAll('.flip-card').forEach(function(card){
+      card.addEventListener('click', function(e){
+        // toggle flip on click
+        this.classList.toggle('flip');
+        // Update aria-pressed for accessibility
+        const pressed = this.classList.contains('flip');
+        this.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+      });
+
+      // keyboard accessible: Enter or Space
+      card.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          this.click();
+        }
+      });
+    });
+
+    // change navbar style on scroll
+    const header = document.querySelector('.site-header');
+    window.addEventListener('scroll', function(){
+      const y = window.scrollY;
+      if (y > 40) {
+        header.style.background = 'linear-gradient(180deg, rgba(3,36,54,0.96), rgba(2,28,42,0.96))';
+        header.style.boxShadow = '0 6px 22px rgba(1,22,34,0.35)';
+      } else {
+        header.style.background = 'linear-gradient(180deg, rgba(6,66,100,0.26), rgba(6,66,100,0.18))';
+        header.style.boxShadow = 'none';
+      }
+    });
+
+    // small touch-friendly tweak: close collapse when nav link tapped (mobile)
+    document.querySelectorAll('.navbar-nav .nav-link').forEach(function(link){
+      link.addEventListener('click', function(){
+        const bsCollapse = document.querySelector('#navMenu');
+        if (bsCollapse.classList.contains('show')) {
+          // use bootstrap collapse via class toggling by clicking toggler
+          document.querySelector('.navbar-toggler').click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
